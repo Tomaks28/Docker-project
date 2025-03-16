@@ -25,7 +25,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           source: "./"
-          target: "/Git/Docker-project"
+          target: "/home/${{secrets.HOST_HADES_USER}}/${{DEPLOY_PATH}}"
 
       - name: Build Docker image
         uses: appleboy/ssh-action@v0.1.0
@@ -35,7 +35,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            cd /Git/Docker-project
+            cd /home/${{secrets.HOST_HADES_USER}}/${{DEPLOY_PATH}}
             docker build -t hades .
 
       - name: Run Docker container
@@ -46,5 +46,5 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            cd /Git/Docker-project
+            cd /home/${{secrets.HOST_HADES_USER}}/${{DEPLOY_PATH}}
             docker run -d -p 4000:4000 hades
