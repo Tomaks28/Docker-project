@@ -40,11 +40,11 @@ jobs:
             # Construire l'image Docker
             docker build -t hades .
 
-            # Supprimer l'ancien conteneur s'il existe
-            echo "Stopping and removing old container..."
-            docker stop heuristic_hoover || true
-            docker rm heuristic_hoover || true
+            # Vérifier si le conteneur utilisant le port ${{secrets.SSH_PORT}} est actif et le stopper
+            echo "Stopping any container using port ${{secrets.SSH_PORT}}..."
+            docker ps --filter "publish=${{secrets.SSH_PORT}}" -q | xargs -r docker stop
+            docker ps --filter "publish=${{secrets.SSH_PORT}}" -q | xargs -r docker rm
 
             # Lancer le nouveau conteneur
             echo "Starting new container..."
-            docker run -d -p 4000:4000 --name heuristic_hoover hades
+            docker run -d -p ${{secrets.SSH_PORT}}:${{secrets.SSH_PORT}} --name heuristic_hoover hades
