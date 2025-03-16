@@ -16,19 +16,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Add SSH key manually
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          eval $(ssh-agent -s)
-          ssh-add ~/.ssh/id_ed25519
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.HOST_HADES_IP }}
+          username: ${{ secrets.HOST_HADES_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Vérifie si le dossier existe, sinon le crée
+            mkdir -p /Git/Docker-project
 
-      - name: Copy files to Debian server
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.HOST_HADES_USER }}@${{ secrets.HOST_HADES_IP }} "mkdir -p /path/to/your/project"
-          scp -r ./ ${{ secrets.HOST_HADES_USER }}@${{ secrets.HOST_HADES_IP }}:/path/to/your/project
-
-      - name: Run deployment script
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.HOST_HADES_USER }}@${{ secrets.HOST_HADES_IP }} 'bash -s' < ./deploy_script.sh
+            # Aller dans le dossier et récupérer la dernière version du code
+            cd /Git/Docker-project
+            if [ -d ".git" ]; then
+              git pull origin main
+            else
+              git clone git@github.com:Tomaks28/ton-repo.git .
+            fi
