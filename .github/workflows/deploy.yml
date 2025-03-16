@@ -26,6 +26,15 @@ jobs:
           ssh -o StrictHostKeyChecking=no ${{ secrets.HOST_HADES_USER }}@${{ secrets.HOST_HADES_IP }} "mkdir -p /home/${{ secrets.HOST_HADES_USER }}/Git/Docker-project"
           scp -r ./ ${{ secrets.HOST_HADES_USER }}@${{ secrets.HOST_HADES_IP }}:/home/${{ secrets.HOST_HADES_USER }}/Git/Docker-project
 
-      - name: Run deployment script
+      - name: Deploy Docker container on Debian server
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.HOST_HADES_USER }}@${{ secrets.HOST_HADES_IP }} 'bash -s' < ./deploy_script.sh
+          ssh -o StrictHostKeyChecking=no ${{ secrets.HOST_HADES_USER }}@${{ secrets.HOST_HADES_IP }} << 'EOF'
+            # Naviguer vers le répertoire du projet
+            cd /home/${{ secrets.HOST_HADES_USER }}/Git/Docker-project
+
+            # Construire l'image Docker
+            docker build -t my-server .
+
+            # Lancer le conteneur Docker
+            docker run -d -p 3000:3000 --name my-server-container my-server
+          EOF
