@@ -24,7 +24,7 @@ jobs:
           host: ${{ secrets.HOST_HADES_IP }}
           username: ${{ secrets.HOST_HADES_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
+          port: ${{ env.SSH_PORT }}
           source: "./"
           target: "/home/${{secrets.HOST_HADES_USER}}/${{secrets.DEPLOY_PATH}}"
 
@@ -34,7 +34,7 @@ jobs:
           host: ${{ secrets.HOST_HADES_IP }}
           username: ${{ secrets.HOST_HADES_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
+          port: ${{ env.SSH_PORT }}
           script: |
             cd /home/${{secrets.HOST_HADES_USER}}/${{secrets.DEPLOY_PATH}}
 
@@ -43,9 +43,9 @@ jobs:
 
             # Vérifier si le conteneur utilisant le port actif et le stopper
             echo "Stopping any container using actif port..."
-            docker ps --filter "publish=${{secrets.PORT}}" -q | xargs -r docker stop
-            docker ps --filter "publish=${{secrets.PORT}}" -q | xargs -r docker rm
+            docker ps --filter "publish=${{env.PORT}}" -q | xargs -r docker stop
+            docker ps --filter "publish=${{env.PORT}}" -q | xargs -r docker rm
 
             # Lancer le nouveau conteneur
             echo "Starting new container..."
-            docker run -p ${{secrets.PORT}}:${{secrets.PORT}} hades
+            docker run -p ${{env.PORT}}:${{env.PORT}} hades
