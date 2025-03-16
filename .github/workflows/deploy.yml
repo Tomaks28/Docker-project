@@ -24,7 +24,7 @@ jobs:
       - name: Ensure proper permissions and create directories
         run: |
           # Connexion à Hades et création du dossier avec les bonnes permissions
-          ssh -o StrictHostKeyChecking=no ${{ secrets.HOST_HADES_USER }}@${{ secrets.HOST_HADES_IP }} "sudo mkdir -p ${DEPLOY_PATH} && sudo chown -R ${{ secrets.HOST_HADES_USER }}:${{ secrets.HOST_HADES_USER }} ${DEPLOY_PATH} && sudo chmod -R 775 ${DEPLOY_PATH}"
+          ssh -o StrictHostKeyChecking=no ${{ secrets.HOST_HADES_USER }}@${{ secrets.HOST_HADES_IP }} "mkdir -p ${DEPLOY_PATH} && chown -R ${{ secrets.HOST_HADES_USER }}:${{ secrets.HOST_HADES_USER }} ${DEPLOY_PATH} && chmod -R 775 ${DEPLOY_PATH}"
 
       - name: Copy files to Debian server
         run: |
