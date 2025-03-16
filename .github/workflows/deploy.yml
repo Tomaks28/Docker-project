@@ -16,20 +16,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.HOST_HADES_IP }}
-          username: ${{ secrets.HOST_HADES_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            # Vérifie si le dossier existe, sinon le crée
-            mkdir -p /Git/Docker-project
+        env:
+          DEPLOY_PATH: "/Git/Docker-project"
 
-            # Aller dans le dossier et récupérer la dernière version du code
-            cd /Git/Docker-project
-            if [ -d ".git" ]; then
-              git pull origin main
-            else
-              git clone git@github.com:Tomaks28/ton-repo.git .
-            fi
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Copy files to Debian server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.HOST_HADES_USER }}@${{ secrets.HOST_HADES_IP }} "mkdir -p ${DEPLOY_PATH}"
+          scp -r ./ ${{ secrets.HOST_HADES_USER }}@${{ secrets.HOST_HADES_IP }}:${DEPLOY_PATH}
+
+      - name: Run deployment script
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.HOST_HADES_USER }}@${{ secrets.HOST_HADES_IP }} 'bash -s' < ./deploy_script.sh
