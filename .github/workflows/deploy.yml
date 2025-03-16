@@ -48,4 +48,4 @@ jobs:
 
             # Lancer le nouveau conteneur
             echo "Starting new container..."
-            docker run -p ${{env.PORT}}:${{env.PORT}} hades
+            docker run -d -p ${{env.PORT}}:${{env.PORT}} hades
