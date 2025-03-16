@@ -36,6 +36,15 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd /home/${{secrets.HOST_HADES_USER}}/${{secrets.DEPLOY_PATH}}
+
+            # Construire l'image Docker
             docker build -t hades .
-            docker stop heuristic_hoover
-            docker run -d -p 4000:4000 hades
+
+            # Supprimer l'ancien conteneur s'il existe
+            echo "Stopping and removing old container..."
+            docker stop heuristic_hoover || true
+            docker rm heuristic_hoover || true
+
+            # Lancer le nouveau conteneur
+            echo "Starting new container..."
+            docker run -d -p 4000:4000 --name heuristic_hoover hades
