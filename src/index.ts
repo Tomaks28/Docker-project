@@ -7,8 +7,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.get("/error", (req: Request, res: Response) => {
-  throw new Error("Error route");
-  exit(1);
+  process.exit(1);
 });
 
 app.listen(4000, () => {
