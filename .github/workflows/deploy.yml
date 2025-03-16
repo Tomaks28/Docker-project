@@ -27,7 +27,7 @@ jobs:
           source: "./"
           target: "/home/${{secrets.HOST_HADES_USER}}/${{secrets.DEPLOY_PATH}}"
 
-      - name: Build Docker image
+      - name: Docker - Build and Run
         uses: appleboy/ssh-action@v0.1.0
         with:
           host: ${{ secrets.HOST_HADES_IP }}
@@ -37,14 +37,4 @@ jobs:
           script: |
             cd /home/${{secrets.HOST_HADES_USER}}/${{secrets.DEPLOY_PATH}}
             docker build -t hades .
-
-      - name: Run Docker container
-        uses: appleboy/ssh-action@v0.1.0
-        with:
-          host: ${{ secrets.HOST_HADES_IP }}
-          username: ${{ secrets.HOST_HADES_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            cd /home/${{secrets.HOST_HADES_USER}}/${{secrets.DEPLOY_PATH}}
             docker run -d -p 4000:4000 hades
