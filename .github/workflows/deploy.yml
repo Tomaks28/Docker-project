@@ -1,4 +1,4 @@
-name: Deploy to Debian 12
+name: Deploy to Hades - Debian 12
 
 on:
   push:
@@ -14,31 +14,38 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.5.3
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v35
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          since_last_remote_commit: true
+          separator: ","
 
-      - name: Ensure proper permissions and create directories
-        run: |
-          # Connexion à Hades et création du dossier avec les bonnes permissions
-          ssh -o StrictHostKeyChecking=no ${{ secrets.HOST_HADES_USER }}@${{ secrets.HOST_HADES_IP }} "sudo mkdir -p ${DEPLOY_PATH} && sudo chown -R ${{ secrets.HOST_HADES_USER }}:${{ secrets.HOST_HADES_USER }} ${DEPLOY_PATH} && sudo chmod -R 775 ${DEPLOY_PATH}"
+      # - name: Set up SSH
+      #   uses: webfactory/ssh-agent@v0.5.3
+      #   with:
+      #     ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Copy files to Debian server
-        run: |
-          scp -r ./ ${{ secrets.HOST_HADES_USER }}@${{ secrets.HOST_HADES_IP }}:/home/${{ secrets.HOST_HADES_USER }}/Git/Docker-project
+      # - name: Ensure proper permissions and create directories
+      #   run: |
+      #     # Connexion à Hades et création du dossier avec les bonnes permissions
+      #     ssh -o StrictHostKeyChecking=no ${{ secrets.HOST_HADES_USER }}@${{ secrets.HOST_HADES_IP }} "sudo mkdir -p ${DEPLOY_PATH} && sudo chown -R ${{ secrets.HOST_HADES_USER }}:${{ secrets.HOST_HADES_USER }} ${DEPLOY_PATH} && sudo chmod -R 775 ${DEPLOY_PATH}"
 
-      - name: Deploy Docker container on Debian server
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.HOST_HADES_USER }}@${{ secrets.HOST_HADES_IP }} << 'EOF'
-            # Naviguer vers le répertoire du projet
-            cd /home/${{ secrets.HOST_HADES_USER }}/Git/Docker-project
+      # - name: Copy files to Debian server
+      #   run: |
+      #     scp -r ./ ${{ secrets.HOST_HADES_USER }}@${{ secrets.HOST_HADES_IP }}:/home/${{ secrets.HOST_HADES_USER }}/Git/Docker-project
 
-            # Construire l'image Docker
-            docker build -t my-server .
+      # - name: Deploy Docker container on Debian server
+      #   run: |
+      #     ssh -o StrictHostKeyChecking=no ${{ secrets.HOST_HADES_USER }}@${{ secrets.HOST_HADES_IP }} << 'EOF'
+      #       # Naviguer vers le répertoire du projet
+      #       cd /home/${{ secrets.HOST_HADES_USER }}/Git/Docker-project
 
-            # Lancer le conteneur Docker
-            docker run -d -p 3000:3000 --name my-server-container my-server
-          EOF
+      #       # Construire l'image Docker
+      #       docker build -t my-server .
+
+      #       # Lancer le conteneur Docker
+      #       docker run -d -p 3000:3000 --name my-server-container my-server
+      #     EOF
