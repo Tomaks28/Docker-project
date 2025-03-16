@@ -37,4 +37,5 @@ jobs:
           script: |
             cd /home/${{secrets.HOST_HADES_USER}}/${{secrets.DEPLOY_PATH}}
             docker build -t hades .
+            docker stop hades
             docker run -d -p 4000:4000 hades
