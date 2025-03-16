@@ -17,13 +17,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v35
-        with:
-          since_last_remote_commit: true
-          separator: ","
-
       - name: Copy file to server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -31,7 +24,7 @@ jobs:
           username: ${{ secrets.HOST_HADES_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          source: ${{ steps.changed-files.outputs.all_changed_files }}
+          source: "./"
           target: "/Git/Docker-project"
 
       - name: SSH into server and build Docker image
