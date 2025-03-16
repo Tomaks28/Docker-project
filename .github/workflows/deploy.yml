@@ -11,6 +11,7 @@ jobs:
 
     env:
       DEPLOY_PATH: "/Git/Docker-project"
+      SSH_PORT: 22
 
     steps:
       - name: Checkout code
@@ -29,6 +30,28 @@ jobs:
           host: ${{ secrets.HOST_HADES_IP }}
           username: ${{ secrets.HOST_HADES_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
+          port: ${{ secrets.SSH_PORT }}
           source: ${{ steps.changed-files.outputs.all_changed_files }}
           target: "/Git/Docker-project"
+
+      - name: SSH into server and build Docker image
+        uses: appleboy/ssh-action@v0.1.0
+        with:
+          host: ${{ secrets.HOST_HADES_IP }}
+          username: ${{ secrets.HOST_HADES_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd /Git/Docker-project
+            docker build -t hades .
+
+      - name: SSH into server and run Docker container
+        uses: appleboy/ssh-action@v0.1.0
+        with:
+          host: ${{ secrets.HOST_HADES_IP }}
+          username: ${{ secrets.HOST_HADES_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd /Git/Docker-project
+            docker run -d -p 4000:4000 hades
