@@ -27,7 +27,7 @@ jobs:
           source: "./"
           target: "/Git/Docker-project"
 
-      - name: SSH into server and build Docker image
+      - name: Build Docker image
         uses: appleboy/ssh-action@v0.1.0
         with:
           host: ${{ secrets.HOST_HADES_IP }}
@@ -38,7 +38,7 @@ jobs:
             cd /Git/Docker-project
             docker build -t hades .
 
-      - name: SSH into server and run Docker container
+      - name: Run Docker container
         uses: appleboy/ssh-action@v0.1.0
         with:
           host: ${{ secrets.HOST_HADES_IP }}
