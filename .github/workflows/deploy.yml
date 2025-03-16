@@ -12,6 +12,7 @@ jobs:
     env:
       DEPLOY_PATH: "/Git/Docker-project"
       SSH_PORT: 22
+      PORT: 4000
 
     steps:
       - name: Checkout code
@@ -40,11 +41,11 @@ jobs:
             # Construire l'image Docker
             docker build -t hades .
 
-            # Vérifier si le conteneur utilisant le port ${{secrets.SSH_PORT}} est actif et le stopper
-            echo "Stopping any container using port ${{secrets.SSH_PORT}}..."
-            docker ps --filter "publish=${{secrets.SSH_PORT}}" -q | xargs -r docker stop
-            docker ps --filter "publish=${{secrets.SSH_PORT}}" -q | xargs -r docker rm
+            # Vérifier si le conteneur utilisant le port actif et le stopper
+            echo "Stopping any container using actif port..."
+            docker ps --filter "publish=${{secrets.PORT}}" -q | xargs -r docker stop
+            docker ps --filter "publish=${{secrets.PORT}}" -q | xargs -r docker rm
 
             # Lancer le nouveau conteneur
             echo "Starting new container..."
-            docker run -d -p ${{secrets.SSH_PORT}}:${{secrets.SSH_PORT}} --name heuristic_hoover hades
+            docker run -p ${{secrets.PORT}}:${{secrets.PORT}} hades
